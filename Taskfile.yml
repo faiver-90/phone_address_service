@@ -1,0 +1,113 @@
+version: "3"
+
+vars:
+  PYTHON: python
+  APP_MODULE: app.main:app
+  HOST: 0.0.0.0
+  PORT: 8000
+
+tasks:
+  # ======================
+  # Базовые команды
+  # ======================
+  poetry-install:
+    desc: "Установить зависимости через Poetry (main + dev)"
+    cmds:
+      - poetry install
+
+  poetry-install-main:
+    desc: "Установить только prod-зависимости через Poetry"
+    cmds:
+      - poetry install --only main
+
+  # ======================
+  # Запуск приложения
+  # ======================
+  run:
+    desc: "Запустить FastAPI локально через uvicorn (poetry run)"
+    cmds:
+      - poetry run uvicorn {{.APP_MODULE}} --host {{.HOST}} --port {{.PORT}} --reload
+
+  health:
+    desc: "Проверить health эндпоинт"
+    cmds:
+      - curl -sS http://{{.HOST}}:{{.PORT}}/health || echo "service not responding"
+
+  # ======================
+  # Lint / type-check / tests
+  # ======================
+  lint:
+    desc: "Проверка стиля кода через ruff"
+    cmds:
+      - poetry run ruff check app tests
+
+  lint-fix:
+    desc: "Автофикс проблем ruff где возможно"
+    cmds:
+      - poetry run ruff check app tests --fix
+
+  type-check:
+    desc: "Статическая проверка типов через mypy"
+    cmds:
+      - poetry run mypy app
+
+  test:
+    desc: "Запуск тестов (pytest)"
+    cmds:
+      - poetry run pytest -q
+
+  qa:
+    desc: "Полный прогон: lint + type-check + tests"
+    deps: [lint, type-check, test]
+
+  # ======================
+  # Docker / Docker Compose
+  # ======================
+  docker-build:
+    desc: "Собрать Docker-образ сервиса"
+    cmds:
+      - docker build -t phone-address-service .
+
+  docker-run:
+    desc: "Запустить контейнер локально (без Compose)"
+    cmds:
+      - docker run --rm -p {{.PORT}}:8000 --env-file .env phone-address-service
+
+  compose-up:
+    desc: "Поднять все сервисы через docker compose (API + Redis)"
+    cmds:
+      - docker compose up --build
+
+  compose-up-detached:
+    desc: "Поднять сервисы в фоне (detached)"
+    cmds:
+      - docker compose up --build -d
+
+  compose-down:
+    desc: "Остановить и удалить контейнеры и сеть docker compose"
+    cmds:
+      - docker compose down
+
+  compose-logs:
+    desc: "Логи docker compose"
+    cmds:
+      - docker compose logs -f
+
+  # ======================
+  # Утилиты
+  # ======================
+  fmt:
+    desc: "Форматирование кода через ruff format"
+    cmds:
+      - poetry run ruff format app tests
+
+  check:
+    desc: "Быстрая проверка: lint + type-check"
+    deps: [lint, type-check]
+
+  info:
+    desc: "Показать основные версии (python, poetry, зависимости)"
+    cmds:
+      - '{{.PYTHON}} --version'
+      - poetry --version
+      - poetry show
