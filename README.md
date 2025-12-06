@@ -11,6 +11,7 @@
 - Docker/Docker Compose
 - Настроенными линтерами **ruff** и **mypy**
 - Хранением конфигурации и секретов в `.env` файле
+- CI\CD реализован через DockerHub (Github Actions)
 
 ---
 
@@ -23,6 +24,7 @@
 - Docker / Docker Compose
 - ruff (линтер)
 - mypy (проверка типов)
+- DockerHub (CI\CD)
 
 ---
 
