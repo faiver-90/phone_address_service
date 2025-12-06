@@ -111,3 +111,18 @@ tasks:
       - '{{.PYTHON}} --version'
       - poetry --version
       - poetry show
+# ===== Git commit with Ruff + push =====
+  commit:
+    desc: "Format with Ruff, commit with message, and push"
+    vars:
+      MSG: '{{.CLI_ARGS}}'
+    preconditions:
+      - sh: 'test -n "{{.MSG}}"'
+        msg: 'Ошибка: Не указан комментарий. Использование: task commit -- "комментарий"'
+    cmds:
+      - "poetry run ruff format ."
+      - "poetry run ruff check . --fix"
+      - "git add ."
+      - 'git commit -m "{{.MSG}}" --no-verify'
+      - "git push"
+      - 'echo "Коммит успешно выполнен и отправлен."'

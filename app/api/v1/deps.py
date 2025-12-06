@@ -15,7 +15,9 @@ def get_redis_client() -> Redis:
     return redis_connector.client
 
 
-def get_phone_address_service(redis_client: Redis = Depends(get_redis_client)) -> PhoneAddressService:
+def get_phone_address_service(
+    redis_client: Redis = Depends(get_redis_client),
+) -> PhoneAddressService:
     """Dependency provider for :class:`PhoneAddressService`.
 
     Args:

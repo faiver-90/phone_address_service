@@ -53,6 +53,7 @@ class RedisConnector:
 
 redis_connector = RedisConnector()
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[dict[str, Any]]:
     """Application lifespan manager for FastAPI.

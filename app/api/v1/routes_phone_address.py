@@ -21,7 +21,6 @@ from app.services.phone_address_service import PhoneAddressService
 router = APIRouter(prefix="/phone-addresses", tags=["Phone-address management"])
 
 
-
 @router.get(
     "/{phone}",
     response_model=PhoneAddressRead,

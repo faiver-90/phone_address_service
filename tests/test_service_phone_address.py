@@ -1,4 +1,3 @@
-
 import pytest
 
 from app.schemas.phone_address import PhoneAddressCreate

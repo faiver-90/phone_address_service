@@ -19,7 +19,9 @@ async def test_create_phone_address_success(async_client: AsyncClient) -> None:
 
 
 @pytest.mark.anyio
-async def test_create_phone_address_conflict(async_client: AsyncClient, fake_redis: FakeRedis) -> None:
+async def test_create_phone_address_conflict(
+    async_client: AsyncClient, fake_redis: FakeRedis
+) -> None:
     """Re-creating the record with the same phone number should return a 409."""
 
     payload = {"phone": "111", "address": "Addr1"}
@@ -75,7 +77,8 @@ async def test_update_phone_address_success(async_client: AsyncClient) -> None:
 async def test_update_phone_address_not_found(async_client: AsyncClient) -> None:
     """Updating a non-existent record should return a 404."""
     response = await async_client.put(
-        "/api/v1/phone-addresses/unknown", json={"address": "addr"},
+        "/api/v1/phone-addresses/unknown",
+        json={"address": "addr"},
     )
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json()["detail"] == "Phone number not found."
