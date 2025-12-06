@@ -32,6 +32,10 @@ class FakeRedis:
     async def delete(self, name: str) -> int:
         return int(self._store.pop(name, None) is not None)
 
+    async def ping(self) -> bool:
+        """Эмуляция redis.ping() — в тестах всегда 'живой'."""
+        return True
+
 
 @pytest.fixture
 def fake_redis() -> FakeRedis:

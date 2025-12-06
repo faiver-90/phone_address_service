@@ -10,7 +10,7 @@ async def test_health_endpoint(async_client: AsyncClient) -> None:
     """Проверяем, что /health доступен и возвращает ожидаемый json."""
     response = await async_client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {"status": "ok", "redis": "ok"}
 
 
 def test_app_title_matches_settings() -> None:
