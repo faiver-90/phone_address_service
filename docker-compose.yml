@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   api:
-    build: .
+    image: faiver90/phone_address_service:latest
     container_name: phone-address-api
     env_file:
       - .env

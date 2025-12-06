@@ -1,22 +1,19 @@
-name: CI
+name: CI + Docker Push
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
 
 jobs:
-  tests:
-    name: Lint, type-check, tests
+  build-test-push:
     runs-on: ubuntu-latest
 
     env:
       POETRY_VERSION: 1.8.3
       PYTHON_VERSION: "3.12"
+      IMAGE_NAME: faiver90/phone_address_service
 
     steps:
       - name: Checkout repository
@@ -26,37 +23,41 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
 
       - name: Install Poetry
         run: |
           pip install "poetry==${{ env.POETRY_VERSION }}"
           poetry --version
 
-      - name: Configure Poetry (no virtualenvs outside project)
+      - name: Configure Poetry
         run: |
           poetry config virtualenvs.in-project true
 
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v4
-        with:
-          path: ./.venv
-          key: venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('pyproject.toml', 'poetry.lock') }}
-          restore-keys: |
-            venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-
-
-      - name: Install dependencies (main + dev)
+      - name: Install dependencies
         run: |
           poetry install --no-interaction --no-root
 
       - name: Run ruff (lint)
         run: |
-          poetry run ruff check app tests
+          poetry run ruff check .
 
       - name: Run mypy (type-check)
         run: |
-          poetry run mypy app tests
+          poetry run mypy .
 
       - name: Run pytest
         run: |
           poetry run pytest -q
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image (latest)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:latest
