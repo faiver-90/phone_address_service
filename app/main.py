@@ -5,8 +5,10 @@ The module defines the FastAPI application, configures metadata for
 automatic documentation (Swagger / OpenAPI) and registers all API routers.
 """
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from redis.asyncio import Redis
 
+from app.api.v1.deps import get_redis_client
 from app.api.v1.routes_phone_address import router as phone_address_router
 from app.core.config import get_settings
 from app.core.redis import lifespan
@@ -45,7 +47,7 @@ app.include_router(phone_address_router, prefix=settings.api_v1_prefix)
     summary="Health check",
     description="Simple endpoint for checking that the service is alive.",
 )
-async def healthcheck() -> dict[str, str]:
+async def healthcheck(redis: Redis = Depends(get_redis_client)) -> dict[str, str]:
     """Return service health status.
 
     This endpoint can be used by monitoring systems or orchestrators to
@@ -54,5 +56,15 @@ async def healthcheck() -> dict[str, str]:
     Returns:
         dict[str, str]: A dictionary with a single ``status`` field.
     """
+    try:
+        pong = await redis.ping()
+        redis_status = "ok" if pong else "unavailable"
+    except Exception:
+        redis_status = "unavailable"
 
-    return {"status": "ok"}
+    overall = "ok" if redis_status == "ok" else "degraded"
+
+    return {
+        "status": overall,
+        "redis": redis_status,
+    }

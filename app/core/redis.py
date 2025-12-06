@@ -40,7 +40,7 @@ class RedisConnector:
         """
 
         if self._client is None:
-            self._client = redis.from_url(get_redis_url(), decode_responses=True)
+            self._client = redis.from_url(get_redis_url())
         return self._client
 
     async def close(self) -> None:

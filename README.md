@@ -60,13 +60,17 @@ API_V1_PREFIX=/api/v1
 - Docker Compose
 
 1. Склонируйте/скачайте проект.
+```commandline
+git clone https://github.com/faiver-90/phone_address_service
+cd phone_address_service
+```
 2. Создайте `.env`:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Запустите сервисы:
+3. Запустите сервисы, предварительно проверив, что порт 8000 свободен:
 
 ```bash
 docker compose up --build -d
@@ -76,6 +80,7 @@ docker compose up --build -d
 
 - API: `http://localhost:8000`
 - Redis: доступен внутри сети Docker как `redis:6379`
+- Swagger `http://localhost:8000/docs`
 
 4. Остановить сервисы:
 
