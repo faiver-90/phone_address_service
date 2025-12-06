@@ -7,7 +7,7 @@ and documented via FastAPI's OpenAPI/Swagger integration.
 
 from http import HTTPStatus
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, HTTPException, Path
 
 from app.api.v1.deps import get_phone_address_service
 from app.schemas.phone_address import (
@@ -55,8 +55,6 @@ async def get_phone_address(
 
     result = await service.get(phone)
     if result is None:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail="Phone number not found.",
@@ -99,8 +97,6 @@ async def create_phone_address(
 
     created = await service.create(payload)
     if not created:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=HTTPStatus.CONFLICT,
             detail="Phone number already exists.",
@@ -144,8 +140,6 @@ async def update_phone_address(
 
     updated = await service.update(phone=phone, address=payload.address)
     if not updated:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail="Phone number not found.",
@@ -190,8 +184,6 @@ async def delete_phone_address(
 
     deleted = await service.delete(phone=phone)
     if not deleted:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail="Phone number not found.",
