@@ -123,6 +123,7 @@ tasks:
     cmds:
       - "poetry run ruff format ."
       - "poetry run ruff check . --fix"
+      - "mypy ."
       - "git add ."
       - 'git commit -m "{{.MSG}}" --no-verify'
       - "git push"
