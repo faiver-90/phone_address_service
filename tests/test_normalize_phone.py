@@ -18,5 +18,5 @@ from app.services.normalize_phone import normalize_phone
         ("   123   ", "123"),
     ],
 )
-def test_normalize_phone(raw, expected):
+def test_normalize_phone(raw: str, expected: str) -> None:
     assert normalize_phone(raw) == expected
