@@ -11,6 +11,7 @@ from typing import Final
 from redis.asyncio import Redis
 
 from app.schemas.phone_address import PhoneAddressCreate, PhoneAddressRead
+from app.services.normalize_phone import normalize_phone
 
 
 class PhoneAddressService:
@@ -36,8 +37,8 @@ class PhoneAddressService:
         Returns:
             str: A namespaced Redis key.
         """
-
-        return f"phone_address:{phone}"
+        normalized_phone = normalize_phone(phone)
+        return f"phone_address:{normalized_phone}"
 
     async def get(self, phone: str) -> PhoneAddressRead | None:
         """Retrieve phone-address record by phone number.
